@@ -190,7 +190,7 @@ router.route('/verifysession').get((req, res) => {
                 return res.send({
                     success:true,
                     message:'Session verified',
-                    username:sessions[0].username
+                    username:sessions[0].username,
                 })
             }
 })
