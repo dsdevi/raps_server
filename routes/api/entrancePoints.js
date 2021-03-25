@@ -94,7 +94,7 @@ router.route("/nearEntrance").post((req, res) => {
 router.route("/nearDanger").post((req, res) => {
   const username = req.body.username;
 
-  RoadSession.findOne({ isEnded: false, username: username })
+  RoadSession.findOne({ isEnded: false, username: username }) //might need to change to findOneAndUpdate
     .then((data) => {
       const date = new Date();
       const time = date.getHours() + date.getMinutes() / 100;
@@ -134,17 +134,39 @@ router.route("/nearDanger").post((req, res) => {
           ? "Mid"
           : "Older";
 
+      const kottawaCoords = { latitude: 6.84049, longitude: 79.980573 };
+      const dfromK = haversine(
+        //distance from Kottawa
+        {
+          latitude: parseFloat(req.body.lat),
+          longitude: parseFloat(req.body.lng),
+        },
+        kottawaCoords,
+        { unit: "km" }
+      );
+      const KMPost_new =
+        dfromK <= 25
+          ? "KM1"
+          : dfromK <= 50
+          ? "KM2"
+          : dfromK <= 75
+          ? "KM3"
+          : dfromK <= 100
+          ? "KM4"
+          : "KM5";
+
       console.log({
         // coords: {lat: req.body.lat, lng:req.body.lng},
         // hour: new Date().getHours(),
         // vehicleDetails: data.vehicleDetails,
         // weatherDetails: data.weatherDetails,
+        current_time: time,
         Vehicle_Type: data.vehicleDetails.get("type"),
         Vision: vision,
         Age_new: age_cat,
         Weather: weather,
-        KMPost_new: null,
-        day_cat: null,
+        KMPost_new: KMPost_new,
+        day_cat: null, //public holiday I think
         month_cat: month_cat,
         Animal_Prob: null,
         hour_cat: hour_cat,
